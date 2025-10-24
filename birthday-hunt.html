@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Birthday Scavenger Hunt 🎉</title>
+<style>
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ff80ab, #ffcc80);
+    color: white;
+    text-align: center;
+    padding: 40px;
+    overflow-x: hidden;
+  }
+  #clue-box {
+    margin-top: 30px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 10px;
+    padding: 20px;
+    display: inline-block;
+  }
+  button {
+    background: #fff;
+    color: #ff4081;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  button:hover { background: #ff4081; color: white; }
+  .hidden { display: none; }
+  .fade { animation: fadeIn 1s; }
+  @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+  #confetti-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  #photo-collage {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  #photo-collage img {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border: 3px solid white;
+    border-radius: 10px;
+  }
+  #whatsapp-link img {
+    width: 50px;
+    height: 50px;
+    transition: 0.3s;
+  }
+  #whatsapp-link img:hover { transform: scale(1.15); }
+</style>
+</head>
+<body>
+  <h1>🎈 Welcome to the Birthday Scavenger Hunt 🎈</h1>
+  <p>Find all the clues to unlock your surprise!</p>
+  <div id="clue-box" class="fade">
+    <p id="clue">Clue 1: I’m where we first met. Type the answer below!</p>
+    <input type="text" id="answer" placeholder="Type here..." />
+    <button onclick="checkAnswer()">Submit</button>
+  </div>
+
+  <div id="result" class="hidden fade"></div>
+  <canvas id="confetti-canvas"></canvas>
+
+<script>
+  const clues = [
+    { question: "I’m where we first met. Type the answer below!", answer: "jnv" },
+    { question: "I hold the memories we click together!", answer: "camera" },
+    { question: "I sing without a mouth — what am I?", answer: "music" },
+  ];
+  let index = 0;
+
+  function checkAnswer() {
+    const ans = document.getElementById("answer").value.trim().toLowerCase();
+    if (ans === clues[index].answer) {
+      index++;
+      if (index < clues.length) {
+        document.getElementById("clue").textContent = "Clue " + (index + 1) + ": " + clues[index].question;
+        document.getElementById("answer").value = "";
+      } else {
+        document.getElementById("clue-box").classList.add("hidden");
+        showFinalSurprise();
+      }
+    } else {
+      alert("Nope, try again!");
+    }
+  }
+
+  function showFinalSurprise() {
+    const result = document.getElementById("result");
+    result.classList.remove("hidden");
+    result.innerHTML = `
+      <h2>🎉 Happy Birthday! 🎁</h2>
+      <p>“Level up! 🎮✨ #NewAgeUnlocked #HappyBirthdayToYou”
+</p>
+      <div id="photo-collage">
+        <img src="img2.jpg?auto=format&fit=crop&w=140&q=80" alt="Memory 1" />
+        <img src="img1.jpg?auto=format&fit=crop&w=140&q=80" alt="Memory 2" />
+        <img src="img3.jpg?auto=format&fit=crop&w=140&q=80" alt="Memory 3" />
+      </div>
+      <a id="whatsapp-link" href="https://wa.me/916000156937?text=It’s%20your%20day!%20The%20world%20got%20upgraded%20the%20day%20you%20were%20born.%20😏🔥%20%23BirthdayVibes" target="_blank" style="display:inline-block; margin-top:25px; text-decoration:none; color:white;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" />
+        <p>Click Icon
+</p>
+      </a>
+    `;
+    startConfetti();
+  }
+
+  // Confetti animation
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let confettiElements = [];
+
+  function randomRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function createConfetti() {
+    return {
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      r: randomRange(5, 15),
+      d: randomRange(10, 30),
+      color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 60%)`,
+      tilt: randomRange(-10, 10),
+      tiltAngle: 0,
+      tiltAngleIncrement: randomRange(0.05, 0.12)
+    }
+  }
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+
+  function drawConfetti() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < confettiElements.length; i++) {
+      let c = confettiElements[i];
+      ctx.beginPath();
+      ctx.lineWidth = c.r / 2;
+      ctx.strokeStyle = c.color;
+      ctx.moveTo(c.x + c.tilt + c.r / 3, c.y);
+      ctx.lineTo(c.x + c.tilt, c.y + c.tilt + c.r / 5);
+      ctx.stroke();
+    }
+    updateConfetti();
+  }
+
+  function updateConfetti() {
+    for (let i = 0; i < confettiElements.length; i++) {
+      let c = confettiElements[i];
+      c.tiltAngle += c.tiltAngleIncrement;
+      c.y += (Math.cos(c.d) + 3 + c.r / 2) / 2;
+      c.x += Math.sin(c.d);
+      c.tilt = (Math.sin(c.tiltAngle) * 12);
+
+      if (c.y > canvas.height) {
+        confettiElements[i] = createConfetti();
+        confettiElements[i].x = Math.random() * canvas.width;
+        confettiElements[i].y = -20;
+      }
+    }
+  }
+
+  function startConfetti() {
+    resizeCanvas();
+    confettiElements = [];
+    for (let i = 0; i < 150; i++) {
+      confettiElements.push(createConfetti());
+    }
+    (function run() {
+      drawConfetti();
+      requestAnimationFrame(run);
+    })();
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+</script>
+</body>
+</html>
